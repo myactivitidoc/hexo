@@ -1,9 +1,9 @@
 ---
 layout: post
-title: flying 是什么
-description: Mybatis 是一个简约而强大的 orm 解决方案，而 flying 是它的扩展插件。
-category: blog
-date: 2017-04-03
+title: myActiviti 进阶操作和发展方向
+description: 本节内容向您讲解 myActiviti 高级操作和路线图。
+category: 工作流
+date: 2017-12-03
 list_number: false
 ---
 
