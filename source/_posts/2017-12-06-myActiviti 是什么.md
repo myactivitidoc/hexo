@@ -31,50 +31,38 @@ myActiviti 的访问地址为内网 [http://10.0.209.133:8080/activiti-explorer/
 
 {% asset_img banner_task2.png %}
 
-一级菜单默认选中`任务`，这是用户查看指派给自己任务的界面。但我们现在的任务是开发流程图，所以我们选中`流程`菜单：
+一级菜单默认选中 `任务`，这是用户查看指派给自己任务的界面。但我们现在的任务是设计流程图，所以我们选中 `流程`：
 
 {% asset_img banner_process2.png %}
 
-然后，我们开始设计一个最简单的流程图。
+然后，我们开始设计一个简单的流程图。
 
 ## [如何设计一个流程图](#如何设计一个流程图)
+选中 `流程` 后，下方会出现如下所示的二级菜单：
 
-{% asset_img banner2_deploy.png %}
+{% asset_img banner2_deploy2.png %}
 
-{% asset_img banner2_design.png %}
+二级菜单默认选中 `已部署流程定义`，在这个界面可以启动流程。但现在我们还没有流程图，所以我们选中 `流程设计工作区`：
 
-使用本插件前您需要具备 Java 开发数据库应用的知识和使用 Mybatis 基本功能的经验。
-在 Mybatis 中，有一个核心的配置文件，称做 Configuration.xml，我们的插件需要先在这里配置，才能在运行期被识别出来。
+{% asset_img banner2_design2.png %}
 
-在 Configuration.xml 中，首先为了让 Mybatis 在多线程环境下工作的更好，需要在 `settings` 中进行以下设置：
-```xml
-<settings>
-    <setting name="lazyLoadingEnabled" value="false" />
-    <setting name="aggressiveLazyLoading" value="false" />
-    <setting name="localCacheScope" value="SESSION" />
-    <setting name="autoMappingBehavior" value="PARTIAL" />
-    <setting name="lazyLoadTriggerMethods" value="" />
-</settings>
-```
-（以上配置中没有提到的内容用户可按照自己的实际情况进行配置）
- 
-然后，在 Configuration.xml 的底部，我们加入 `plugins` 元素，将 flying 中的 Interceptor（拦截器）配置成 `plugin`，然后放到 `plugins` 中。目前 flying 有两个主要拦截器（负责处理 pojo 自动注射的 `AutoMapperInterceptor` 和负责完善二级缓存的 `EnhancedCachingInterceptor`），配置它们的方式如下：
-```xml
-<plugins>
-    <plugin interceptor="indi.mybatis.flying.interceptors.AutoMapperInterceptor">
-        <property name="dialect" value="mysql" />
-    </plugin>
-    <plugin interceptor="indi.mybatis.flying.interceptors.EnhancedCachingInterceptor">
-        <property name="cacheEnabled" value="true" />
-    </plugin>
-</plugins>
-```
-（以上配置中 `dialect` 标识了目标数据库为 mysql，`cacheEnabled` 标识了二级缓存为打开状态，更多的属性请参见讲解该插件的章节。）
+二级菜单的右方如下所示：
 
-配置好以上内容之后，保存 Configuration.xml 文件，按正常方式启动 Mybatis，flying 即可生效。
+{% asset_img banner2_designr.png %}
 
-flying采用非侵占式工作机制，您既可以在以传统方式使用 mybatis 的项目中加入一部分以 flying 方式配置的方法，也可以在以 flying 方式配置的项目中加入一部分传统方式的方法，当然更好的选择是，完全使用 flying 方式替代传统的方式。
- 
+我们选中 `新建模型`，然后出现新增窗口：
+
+{% asset_img new3.png %}
+
+在这里我们把新模型命名为“myProcess”，您可以按喜好添加描述，然后首选设计器保持 `Activiti Modeler` 不变，点击“创建”，进入如下界面，关于这个设计页面的各种功能我们会在下一篇文档中详细介绍。
+
+{% asset_img modeler.png %}
+
+我们将 `开始事件-普通开始事件`、`任务-邮件任务`、`结束事件-普通结束事件` 三个元素拖拽到右边工作区，然后用序列流将它们连起来，如下：
+
+{% asset_img process_mail.png %}
+
+我们的目的是通过简单的流程图展示 myActiviti 流程的生命周期，所以创建了一个邮件任务，这个流程图干的事情很简单，当它启动时，向指定的邮箱发送指定的内容，然后结束。
 ## [如何保存和部署流程图](#如何保存和部署流程图)
  
 flying 的代码在 github 和 gitee 上进行开源，前者访问地址为 [https://github.com/limeng32/mybatis.flying](https://github.com/limeng32/mybatis.flying)，后者访问地址为[https://gitee.com/limeng32/mybatis.flying](https://gitee.com/limeng32/mybatis.flying) 您可以通过 Issues 与我们联系，提出您的需要，或是加入我们成为贡献者，提交您的代码，我们非常欢迎您这样做。
