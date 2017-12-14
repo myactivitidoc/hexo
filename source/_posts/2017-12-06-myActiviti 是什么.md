@@ -29,11 +29,11 @@ myActiviti 的访问地址为内网 [http://10.0.209.133:8080/activiti-explorer/
 
 当登录后您可以看到如下所示的一级菜单：
 
-{% asset_img banner_task2.png %}
+{% asset_img banner_task.png %}
 
 一级菜单默认选中 `任务`，这是用户查看指派给自己任务的界面。但我们现在的任务是设计流程图，所以我们选中 `流程`：
 
-{% asset_img banner_process2.png %}
+{% asset_img banner_process.png %}
 
 然后，我们开始设计一个简单的流程图。
 
@@ -63,6 +63,15 @@ myActiviti 的访问地址为内网 [http://10.0.209.133:8080/activiti-explorer/
 {% asset_img process_mail.png %}
 
 我们的目的是通过简单的流程图展示 myActiviti 流程的生命周期，所以创建了一个邮件任务，这个流程图干的事情很简单，当它启动时，向指定的邮箱发送指定的内容，然后结束。
+
+为了让这个流程真正能跑起来，我们还需要做一些事情。首先，您应该能注意到工作区下方有一个输入区，您可以通过点击输入区来显示/隐藏它。当您选中工作区的<b>任何</b>元素，下方都会切换到此元素对应的输入区，当您不选中工作区的元素时，下方会切换到此流程图本身的输入区，如下：
+
+{% asset_img modeler_input.png %}
+
+其中 `流程ID` 和 `元素名称` 都为必填项，`流程ID` 的输入规则是：只能输入大小写字母、数字和下横线“-”，且不能以数字开头，长度不超过40；`元素名称` 没有以上限制，但长度不要超过100。
+（如果您违反以上命名规则，某些情况下可以保存，但在之后部署和运行时可能会出现问题。）
+
+
 ## [如何保存和部署流程图](#如何保存和部署流程图)
  
 flying 的代码在 github 和 gitee 上进行开源，前者访问地址为 [https://github.com/limeng32/mybatis.flying](https://github.com/limeng32/mybatis.flying)，后者访问地址为[https://gitee.com/limeng32/mybatis.flying](https://gitee.com/limeng32/mybatis.flying) 您可以通过 Issues 与我们联系，提出您的需要，或是加入我们成为贡献者，提交您的代码，我们非常欢迎您这样做。
