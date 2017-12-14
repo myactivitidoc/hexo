@@ -14,42 +14,34 @@ Activiti 是目前使用人数最多的开源工作流，它定义的 BPMN 标�
 
 myActiviti 是基于 Activiti-6 的深度改造，它一方面继承了 Activiti 易于上手的优点，另一方面加入了中国流特性和微服务特性。因此学习并使用 myActiviti 可以以极低的成本满足您的业务需求，并且，假如您想切换为其它符合 BPMN 标准的工作流引擎，您也不需要做太多额外的工作，因为您最重要的资产 “流程图” 是可以完全复用的。
 ## [如何访问 myActiviti](#如何访问-myActiviti)
+myActiviti 的访问地址为内网 [http://10.0.209.133:8080/activiti-explorer/](http://10.0.209.133:8080/activiti-explorer/)，点击后会出现如下登录页面：
 {% asset_img login.png %}
 
-目前 flying 已加入到 maven 中心库内，所以您只需在POM文件中加入依赖：
-```xml
-<groupId>com.github.limeng32</groupId>
-<artifactId>mybatis.flying</artifactId>
-<version>0.9.2</version>
-```
-即可以使用。mybatis 版本与 flying 最新版本的对应关系见下：
+这是 myActiviti 的测试环境，目前提供以下测试帐号，这些账号均拥有高级用户权限，可以使用本文档提到的所有功能。
 
-| mybatis 版本     | flying 版本   |
-|:--------|:-------:|
-| `3.2.6` `3.2.7` `3.2.8` | `0.7.4` |
-| `3.3.0` `3.3.1` | `0.8.2` |
-| `3.4.0` `3.4.1` `3.4.2` `3.4.3` `3.4.4` `3.4.5` | `0.9.2` |
-（目前 flying 不支持 mybatis-3.2.6 之前的版本）
+| 用户名     | 密码   |
+|:--------|-------:|
+| `leader` | `lea1der` |
+| `manager` | `manag2er` |
+| `dean` | `d3ean` |
+| `finance` | `4finance` |
+| `tmo` | `tmo5` |
 
-考虑到您可能是以前版本 flying 的使用者，我们会在文档中用 `最新版本新增` 将最新版本新增特性标识出来，在目录中用<font color="red">红色</font>将新增或有修改的章节标识出来。
+当登录后您可以看到如下所示的一级菜单：
 
-如果您使用的是基于某一版本 mybatis 的定制版，您可以在依赖配置中加入 `exclusions`，以 mybatis-3.3.x 的定制版为例，您的依赖配置就像下面这样：
-```xml
-<dependency>
-    <groupId>com.github.limeng32</groupId>
-    <artifactId>mybatis.flying</artifactId>
-    <version>0.8.1</version>
-    <exclusions>
-        <exclusion>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis</artifactId>
-        </exclusion>
-    </exclusions>
-</dependency>
-```
-在您做好以上配置之后，flying 会自动下载到您的电脑本地。
+{% asset_img banner_task2.png %}
 
-## [如何画一个简单的流程图](#如何画一个简单的流程图)
+一级菜单默认选中`任务`，这是用户查看指派给自己任务的界面。但我们现在的任务是开发流程图，所以我们选中`流程`菜单：
+
+{% asset_img banner_process2.png %}
+
+然后，我们开始设计一个最简单的流程图。
+
+## [如何设计一个流程图](#如何设计一个流程图)
+
+{% asset_img banner2_deploy.png %}
+
+{% asset_img banner2_design.png %}
 
 使用本插件前您需要具备 Java 开发数据库应用的知识和使用 Mybatis 基本功能的经验。
 在 Mybatis 中，有一个核心的配置文件，称做 Configuration.xml，我们的插件需要先在这里配置，才能在运行期被识别出来。
