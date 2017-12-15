@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 调用 myActiviti 提供的微服务
-description: 本节内容向您讲解如何调用 myActiviti 提供的微服务。
+description: 本章内容向您讲解如何调用 myActiviti 提供的微服务。
 category: 工作流
 date: 2017-12-04
 list_number: false

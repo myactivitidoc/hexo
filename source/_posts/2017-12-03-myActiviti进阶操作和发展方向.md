@@ -1,7 +1,7 @@
 ---
 layout: post
 title: myActiviti 进阶操作和发展方向
-description: 本节内容向您讲解 myActiviti 高级操作和路线图。
+description: 本章内容向您讲解 myActiviti 高级操作和路线图。
 category: 工作流
 date: 2017-12-03
 list_number: false
