@@ -8,6 +8,8 @@ list_number: false
 ---
 
 ## [开始、流转与仅仅开始](#开始、流转与仅仅开始)
+
+### [仅仅开始（justStart）](#仅仅开始（justStart）)
 在上一章中，我们使用 `justStart` 方法调用了流程，这个方法的中文名称是 “仅仅开始”，它的 api 格式如下：
 
 ```java
@@ -60,6 +62,7 @@ list_number: false
 
 以上就是 `justStart` 操作的全部内容，业务系统调用并获得返回数据后可以按自己的需要使用这些信息。
 
+### [流转（flow）](#流转（flow）)
 多数情况下，业务系统会接着调用 `flow`（流转）操作，仍以上一章的立项流程为例，起草环节的流转 api 格式如下：
 
 ```java
@@ -69,9 +72,77 @@ list_number: false
                 &formData={form_data:{endApply:false, nextOU:"M"}}
 ```
 
+其中，`exeId`（执行变量 Id）、`dealRole`（参与者角色）和  `dealPerson`（参与者）是必填项，`formData`（参与流转的流程变量）是选填项，但是如果待流转的环节含有条件序列流，在发起流转请求时必须包含可以执行条件判断的所有变量。比如我们在上一章设计的流程图中起草环节有可能进行如下判断：
+
+
+| 序列流指向     | 序列流条件   |
+|:--------|:-------|
+| `总院TMO审核`  | ${endApply == false && nextOU == "M"} |
+| `A分院TMO审核` | ${endApply == false && nextOU == "A"} |
+| `B分院TMO审核` | ${endApply == false && nextOU == "B"} |
+| `结束环节`     | ${endApply == true} |
+
+因此在发起这个环节的流转请求时我们或者给出 `endApply` 为 false 和 `nextOU` 的值；或者给出 `endApply` 为 true（此时可以不提供 `nextOU` 的值）。具体赋值的格式如下：
+
+```java
+formData={form_data:{endApply:false, nextOU:"M"}}`
+```
+
+这个方法的返回结果形如：
+
+```json
+{
+    "DataRows": [
+        {
+            "actId": "tmoCheak",
+            "actName": "总院TMO审核",
+            "actRole": [
+                "tmo"
+            ],
+            "exeId": "40013",
+            "isEnd": "0",
+            "taskId": "40028"
+        }
+    ],
+    "RetCode": "1",
+    "RetVal": "1",
+    "isEnd": "0"
+}
+```
+
+内容格式和上一小节 `justStart` 返回的内容格式相同，值得注意的是，这次返回的是流程图中起草的后一个环节。
+
+### [开始（start）](#开始（start）)
+
+之前我们介绍了用于开始流程的 `justStart` 和用于流转的 `flow`，但如果用户不想在第一个环节停留，我们还提供了 `start` 方法用于开始流程并通过第一个环节。这个方法可以看作是先 `justStart` 再 `flow`，它的 api 格式如下：
+
+```java
+./wfservice/start?businessId=business2
+                &dealRole=projectManager
+                &dealPerson=ZhangSan
+                &formData={form_data:{endApply:false, nextOU:"M"}}
+```
+
+其中，`businessId`（要启动的业务 Id）、`dealRole`（参与者角色）和  `dealPerson`（参与者）是必填项，`formData`（参与流转的流程变量）是选填项，但是如果待流转的环节含有条件序列流，在发起流转请求时必须包含可以执行条件判断的所有变量。它的返回和 `flow` 操作的返回是相同的。
 
 ## [挂起、恢复与终止](#挂起、恢复与终止)
 
+### [挂起（suspend）](#挂起（suspend）)
+
+### [恢复（activate）](#恢复（activate）)
+
+### [终止（terminate）](#终止（terminate）)
+
 ## [签收、取消签收与撤回](#签收、取消签收与撤回)
 
+### [签收（receipt）](#签收（receipt）)
+
+### [取消签收（unreceipt）](#取消签收（unreceipt）)
+
+### [撤回（withdraw）](#撤回（withdraw）)
+
 ## [软结束与消息事件](#软结束与消息事件)
+
+### [软结束标志](#软结束标志)
+
+### [消息触发事件（message）](#消息触发事件（message）)
