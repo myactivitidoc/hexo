@@ -15,7 +15,7 @@ Activiti 是目前使用人数最多的开源工作流，它定义的 BPMN 标�
 myActiviti 是基于 Activiti-6 的深度改造，它一方面继承了 Activiti 易于上手的优点，另一方面加入了中国流特性和微服务特性。因此学习并使用 myActiviti 可以以极低的成本满足您的业务需求，并且，假如您想切换为其它符合 BPMN 标准的工作流引擎，您也不需要做太多额外的工作，因为您最重要的资产 “流程图” 是可以完全复用的。
 
 ## [如何访问 myActiviti](#如何访问-myActiviti)
-myActiviti 的访问地址为内网 [http://10.0.209.133:8080/activiti-explorer/](http://10.0.209.133:8080/activiti-explorer/)，点击后会出现如下登录页面：
+myActiviti 的访问地址为内网 [http://10.0.209.147/myactiviti/explorer/#/user/login](http://10.0.209.147/myactiviti/explorer/#/user/login)，点击后会出现如下登录页面：
 {% asset_img login.png %}
 
 这是 myActiviti 的测试环境，目前提供以下测试帐号，这些账号均拥有高级用户权限，可以使用本文档提到的所有功能。
@@ -30,30 +30,30 @@ myActiviti 的访问地址为内网 [http://10.0.209.133:8080/activiti-explorer/
 
 当登录后您可以看到如下所示的一级菜单：
 
-{% asset_img banner_task.png %}
+{% asset_img menu_model.png %}
 
 一级菜单默认选中 `任务`，这是用户查看指派给自己任务的界面。但我们现在的任务是设计流程图，所以我们选中 `流程`：
 
-{% asset_img banner_process.png %}
+{% asset_img menu_process.png %}
 
 然后，我们开始设计一个简单的流程图。
 
 ## [如何设计一个流程图](#如何设计一个流程图)
 选中 `流程` 后，下方会出现如下所示的二级菜单：
 
-{% asset_img banner2_deploy2.png %}
+{% asset_img model_banner.png %}
 
 二级菜单默认选中 `已部署流程定义`，在这个界面可以启动流程。但现在我们还没有流程图，所以我们选中 `流程设计工作区`：
 
-{% asset_img banner2_design2.png %}
+{% asset_img model_panel.png %}
 
 二级菜单的右方如下所示：
 
-{% asset_img banner2_designr.png %}
+{% asset_img model_panel2.png %}
 
 我们选中 `新建模型`，然后出现新增窗口：
 
-{% asset_img new3.png %}
+{% asset_img model_create.png %}
 
 在这里我们把新模型命名为“myProcess”，您可以按喜好添加描述，然后首选设计器保持 `Activiti Modeler` 不变，点击“创建”，进入如下界面，关于这个设计页面的各种功能我们会在下一篇文档中详细介绍。
 
@@ -80,18 +80,24 @@ myActiviti 的访问地址为内网 [http://10.0.209.133:8080/activiti-explorer/
 
 然后点击工作区上方左边第一个按钮，出现保存窗口：
 
-{% asset_img save2.png %}
+{% asset_img modeler_save.png %}
 
 您可以按喜好添加一些 `描述`，至于 `关联业务`，我们在下一章会详细介绍，现在可以不填，然后点击 `保存并关闭编辑器` 就完成了您第一个流程图的全部设计工作。
 
 ## [如何部署和运行流程图](#如何部署和运行流程图)
 如果一切顺利，现在您应该处于二级菜单 `流程设计工作区` 界面下，并且默认选中了刚刚保存的流程，我们点击右上角的 `处理模型` 下拉框，如下：
 
-{% asset_img banner2_design_operate.png %}
+{% asset_img deploy.png %}
+
+{% asset_img process_banner.png %}
 
 然后选择 `部署`。稍等片刻，如果一切顺利，您会处于一级菜单 `管理` 界面下，我们暂时不管这里，点击一级菜单 `流程`。此时您已经可以看到部署好的流程，但它是以流程的 `元素名称` 命名的，现在右上方可使用的功能如下：
 
-{% asset_img banner2_deployr.png %}
+{% asset_img process_panel.png %}
+
+{% asset_img process_panel2.png %}
+
+{% asset_img process_detail.png %}
 
 点选您的流程，然后点击右上角的 `启动流程`，现在，一封邮件已经发到了您设计流程图时指定的邮箱里，然后流程自动结束，到邮箱去看看吧。
 

@@ -49,7 +49,7 @@ list_number: false
 ## [以关联业务方式启动流程](#以关联业务方式启动流程)
 到现在为止，我们的设计工作已经完成了 90%，剩余的工作就是在流程图的输入区设置 `流程ID` 和 `元素名称`，之后点击保存按钮，<b>然后我们在关联业务中输入些内容（例如输入“business2”）</b>，然后保存：
 
-{% asset_img save3.png %}
+{% asset_img modeler_save.png %}
 
 这里的 “business2” 是我们为这个流程指定的业务 ID，保存之后还需要部署这个流程，然后准备工作就全部结束了。相信您早就想运行这个流程了吧，现在在您的浏览器输入 [http://10.0.209.133:8080/activiti-explorer/wfservice/justStart?businessId=business2](http://10.0.209.133:8080/activiti-explorer/wfservice/justStart?businessId=business2) 看看：
 
