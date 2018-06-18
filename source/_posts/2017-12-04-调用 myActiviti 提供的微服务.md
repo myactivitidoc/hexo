@@ -89,7 +89,7 @@ list_number: false
 因此在发起这个环节的流转请求时我们或者给出 `endApply` 为 false 和 `nextOU` 的值；或者给出 `endApply` 为 true（此时可以不提供 `nextOU` 的值）。具体赋值的格式如下：
 
 ```java
-formData={form_data:{endApply:false, nextOU:"M"}}`
+formData={form_data:{endApply:false, nextOU:"M"}}
 ```
 
 这个方法的返回结果形如：

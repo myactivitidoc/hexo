@@ -28,6 +28,7 @@ list_number: false
             ],
             "exeId": "40141",
             "isEnd": "0",
+            "procInstId": "40130",
             "taskId": "40144"
         },
         {
@@ -38,6 +39,7 @@ list_number: false
             ],
             "exeId": "40142",
             "isEnd": "0",
+            "procInstId": "40130",
             "taskId": "40147"
         }
     ],
@@ -47,7 +49,7 @@ list_number: false
 }
 ```
 
-值得注意的是，`DataRows` 中出现两个流程分支，这两个分支都可以进行流转；并且当流转到收集点时，先到的流程分支会返回：
+值得注意的是，`DataRows` 中出现两个流程分支，这两个分支都可以进行流转，同时 `exeId` 不再与 `procInstId` 相同；并且当流转到收集点时，先到的流程分支会返回：
 
 ```json
 {
@@ -71,6 +73,7 @@ list_number: false
             ],
             "exeId": "40130",
             "isEnd": "0",
+            "procInstId": "40130",
             "taskId": "40152"
         }
     ],
@@ -83,7 +86,6 @@ list_number: false
 即两条分支收成了一条，以上两条分支无论谁先谁后都是如此。
 
 ### [自由流](#自由流)
-
 自由流是 BPMN 2.0 新增流转方式之一，它的含义是选择一组特定的环节，组内环节每个都可以无障碍的流转到另一个。在 myActiviti 中，自由流如下图所示：
 
 {% asset_img free.png %}
@@ -99,6 +101,74 @@ list_number: false
 （自由流功能尚在开发中，参数格式并没有完全确定）
 
 自由流跳转的返回的内容与正常流转返回内容相同。
+
+### [监听器](#监听器)
+监听器是 myActiviti 的一种高级特性，它可以极大简化调用工作流 api 解决实际问题的代码，同时极大的提高您软件的生产力。
+
+当您使用工作流解决实际问题时，您进行每一次流转需要的并不仅仅是流程数据，还会用到人员数据、组织机构数据、角色数据、特定业务数据……等等。这些数据有一个统一特点，就是它们和流程环节有密切的相关性，如果您仅仅调用工作流 api，就可以在得到流程数据的同时获得当前环节相关的人员数据、组织机构数据等，将大大提高开发效率，这就是监听器的由来。
+
+在 myActiviti 中使用监听器的方法很简单，在流程图中相关环节上点击“执行监听器”即可：
+
+{% asset_img modeler_listener_2.png %}
+
+之后进入“执行监听器”设置界面，点击如下图所示的“+”号建立监听器：
+
+{% asset_img modeler_listener2_3.png %}
+
+之后，增加一个事件为 <b>start</b>，类为 `org.activiti.myExplorer.listener.ActPersonListener` 的监听器。
+（由于 myActiviti 采用微服务 api 的工作方式，这里选择监听 start 事件才能得到我们想要的效果。而 `org.activiti.myExplorer.listener.ActPersonListener` 是 myActiviti 内置的和环节参与者相关的监听器类，它得到的数据会在返回结果中以 `actPerson` 属性显示）
+
+{% asset_img modeler_listener3.png %}
+
+之后，因为 `org.activiti.myExplorer.listener.ActPersonListener` 监听器的要求，我们还需要为此监听器设置一个名为 “path” 的变量，为此点选左下方的“+”号，输入名称 “path” 和字符串值 “microservice/serviceauth/p_getusersbyroleid”（一个微服务地址），如下图：
+
+{% asset_img modeler_listener4.png %}
+
+最后点选 `保存`，这个监听器就生效了。以后再用 api 流转这个环节时，在 `formData` 中加入 `act_person` 内容和参数，例如：
+
+```java
+formData={form_data:{endApply:false, nextOU:"M"}, act_person:{arg_roleid:"046ab6429ce611e7ad99008cfa042288"}}
+```
+
+如上所示，相关监听器就会自动调用微服务：
+
+```java
+microservice/serviceauth/p_getusersbyroleid?arg_roleid=046ab6429ce611e7ad99008cfa042288
+```
+（前面的 ip 部分可以不写，myActiviti 会根据当前环境自动处理）
+
+调用后得到的数据会在返回结果中以 `actPerson` 属性显示，如下：
+
+```
+{
+    "DataRows": [
+        {
+            "actId": "tmoCheak",
+            "actName": "总院TMO审核",
+            "actPerson": {
+            			"RetVal": "1",
+            			"RetCode": "1",
+            			"RowCount": "6",
+            			"DataRows": [{
+            			    ......
+            			}]
+            		},
+            "actRole": [
+                "tmo"
+            ],
+            "exeId": "40013",
+            "isEnd": "0",
+            "procInstId": "40013",
+            "taskId": "40028"
+        }
+    ],
+    "RetCode": "1",
+    "RetVal": "1",
+    "isEnd": "0"
+}
+```
+
+最后，只有包含 `formData` 的操作（如 `start` 和 `flow`）才能为监听器路径赋予新变量，而不包含 `formData` 的操作（如 `justStart`）只能使用监听器中固定的路径，这是为了监听器可以自由的回退（撤回或驳回）而做的设计。
 
 ## [最佳实践](#最佳实践)
 - 单入口，单出口。虽然工作流支持多个结束环节，但不推荐这样画，建议每个图都有唯一的结束环节。
