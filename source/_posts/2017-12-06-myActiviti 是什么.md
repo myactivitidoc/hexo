@@ -72,11 +72,11 @@ myActiviti 的访问地址为内网 [http://10.0.209.147/myactiviti/explorer/#/u
 
 然后点击工作区上方左边第一个按钮，出现保存窗口：
 
-{% asset_img modeler_save_3.png %}
+{% asset_img modeler_save_4.png %}
 
 您可以按喜好添加一些 `描述`，然后点击 `保存并关闭编辑器` 就完成了您的第一个流程图，这时我们会发现下方的模型列表中多出来一条记录：
 
-{% asset_img model_panel.png %}
+{% asset_img model_panel_2.png %}
 
 当鼠标放到 `更多` 上时，会出现更多操作，如下：
 
@@ -89,7 +89,9 @@ myActiviti 的访问地址为内网 [http://10.0.209.147/myactiviti/explorer/#/u
 
 {% asset_img deploy.png %}
 
-在这里输入一个独一无二的业务标识后，点击 `确定` 即可。关于业务标识的含义我们在下一节会详细介绍。
+在这里输入一个独一无二的业务标识后，点击 `确定` 即可（关于业务标识的含义我们在下一节会详细介绍）。现在模型列表中的记录多了业务标识内容：
+
+{% asset_img model_panel_3.png %}
 
 ## [如何查看已部署流程](#如何查看已部署流程)
 选中左侧菜单中的 `已部署流程` 后，右方会出现如下所示的二级菜单：
@@ -98,13 +100,13 @@ myActiviti 的访问地址为内网 [http://10.0.209.147/myactiviti/explorer/#/u
 
 上图中搜索框可以按流程名称进行搜索，在下方流程列表中可以找到刚刚部署的流程：
 
-{% asset_img process_panel.png %}
+{% asset_img process_panel_2.png %}
 
 {% asset_img process_panel2.png %}
 
 点击 `更多` 中的 `详情` 可以看到该流程的详细信息，如下：
 
-{% asset_img process_detail.png %}
+{% asset_img process_detail_2.png %}
 
 点选对应此流程的 `启动`，现在，一封邮件已经发到了您设计流程图时指定的邮箱里，然后流程自动结束，请到邮箱去看看吧。
 
