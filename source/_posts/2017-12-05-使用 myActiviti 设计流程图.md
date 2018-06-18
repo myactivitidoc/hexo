@@ -47,11 +47,11 @@ list_number: false
 您可能已经注意到，表达式里 `endApply` 是布尔型变量，而 `nextOU` 是 String 型变量，实际上这里还可以有数字型和时间型变量，这些称之为流程变量。在 myActiviti 中，流程变量不用事先声明，直接在条件表达式中使用就可以，在下一章您将会看到这些变量是如何控制整个流程的走向。
 
 ## [以关联业务方式启动流程](#以关联业务方式启动流程)
-到现在为止，我们的设计工作已经完成了 90%，剩余的工作就是在流程图的输入区设置 `流程ID` 和 `元素名称`，之后点击保存按钮，<b>然后我们在关联业务中输入些内容（例如输入“business2”）</b>，然后保存：
+到现在为止，我们的设计工作已经完成了 90%，剩余的工作就是在流程图的输入区设置 `流程ID` 和 `元素名称`，之后点击保存按钮，<b>然后我们在部署时输入业务标识（例如输入“business2”）</b>并部署：
 
-{% asset_img modeler_save_3.png %}
+{% asset_img deploy_2.png %}
 
-这里的 “business2” 是我们为这个流程指定的业务 ID，保存之后还需要部署这个流程，然后准备工作就全部结束了。相信您早就想运行这个流程了吧，现在在您的浏览器输入 [http://10.0.209.133:8080/activiti-explorer/wfservice/justStart?businessId=business2](http://10.0.209.133:8080/activiti-explorer/wfservice/justStart?businessId=business2) 看看：
+这里的 “business2” 是我们为这个流程指定的业务 ID，然后准备工作就全部结束了。相信您早就想运行这个流程了吧，现在在您的浏览器输入 [http://10.0.209.147/microservice/workflow/wfservice/justStart?businessId=business2](http://10.0.209.147/microservice/workflow/wfservice/justStart?businessId=business2) 看看：
 
 ```json
 {
@@ -65,6 +65,7 @@ list_number: false
             "document": "您在文档中填写的内容",
             "exeId": "40013",
             "isEnd": "0",
+            "procInstId": "40013",
             "taskId": "40016"
         }
     ],
@@ -74,6 +75,6 @@ list_number: false
 }
 ```
 
-如果您浏览器上显示的和上面类似（仅仅是 exeId 和 taskId 不同），那恭喜您，您的流程图成功的以微服务的方式调用了。
+如果您浏览器上显示的和上面类似（仅仅是 exeId、procInstId 和 taskId 不同），那恭喜您，您的流程图成功的以微服务的方式调用了。
 
 本篇文章中我们只讲述 `justStart` API 的使用，这是一种启动流程的方法，至于流转、挂起、撤回等更复杂操作，我们在下一章进行介绍。

@@ -29,6 +29,7 @@ list_number: false
             ],
             "exeId": "40013",
             "isEnd": "0",
+            "procInstId": "40013",
             "taskId": "40016"
         }
     ],
@@ -49,8 +50,9 @@ list_number: false
 | `actId`     | 只出现在 `DataRows` 中，显示流程图中此环节 ID |
 | `actName`     | 只出现在 `DataRows` 中，显示流程图中此环节名称 |
 | `actRole`     | 只出现在 `DataRows` 中，显示流程图中此可以处理此环节的角色（数组） |
-| `exeId`     | 只出现在 `DataRows` 中，显示此次流程实例执行变量的 ID |
-| `taskId`     | 只出现在 `DataRows` 中，显示此次流程实例任务变量的 ID |
+| `procInstId`  | 只出现在 `DataRows` 中，显示此次流程实例的 ID |
+| `exeId`     | 只出现在 `DataRows` 中，显示此次流程实例的执行变量的 ID |
+| `taskId`     | 只出现在 `DataRows` 中，显示此次流程实例的任务变量的 ID |
 
 - 对 myActiviti 来说，主流程中的分支流程（`DataRows` 中的内容）永远存在，只不过普通情况下分支流程只有一个，而并行处理情况下分支流程会有多个。
 
@@ -58,7 +60,9 @@ list_number: false
 
 - `taskId` 是业务系统在返回后需要保存的数据，它是业务系统调用“撤回”等异步操作（即不处于激活状态的环节发起的操作）时必要的输入参数。
 
-- `exeId` 和 `taskId` 的区别是，大多数情况下一个流程实例的 `exeId` 是不变的，但 `taskId` 永远都在改变。
+- `procInstId` 是一个流程实例中确定不会改变的数据，它可以唯一标识这个流程实例，大多数情况下 `exeId` 与它相同，但出现并行分支时 `exeId` 会不同于它。
+
+- `procInstId`、`exeId` 和 `taskId` 的区别是，一个流程实例的 `procInstId` 永远不变，大多数情况下 `exeId` 也不会变，但 `taskId` 永远都在改变。
 
 以上就是 `justStart` 操作的全部内容，业务系统调用并获得返回数据后可以按自己的需要使用这些信息。
 
@@ -101,6 +105,7 @@ formData={form_data:{endApply:false, nextOU:"M"}}`
             ],
             "exeId": "40013",
             "isEnd": "0",
+            "procInstId": "40013",
             "taskId": "40028"
         }
     ],

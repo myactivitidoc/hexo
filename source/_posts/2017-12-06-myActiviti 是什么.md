@@ -47,7 +47,7 @@ myActiviti 的访问地址为内网 [http://10.0.209.147/myactiviti/explorer/#/u
 
 {% asset_img model_create.png %}
 
-在这里我们把新模型命名为“myProcess”，您可以按喜好添加描述，然后首选设计器保持 `Activiti Modeler` 不变，点击“创建”，进入如下界面，关于这个设计页面的各种功能我们会在下一篇文档中详细介绍。
+在这里我们把新模型命名为“myProcess”，您可以按喜好添加描述，然后点击“确定”，进入如下界面，关于这个设计页面的各种功能我们会在下一篇文档中详细介绍。
 
 {% asset_img modeler.png %}
 
