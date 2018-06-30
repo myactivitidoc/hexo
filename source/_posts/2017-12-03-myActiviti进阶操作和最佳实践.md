@@ -115,16 +115,20 @@ list_number: false
 
 {% asset_img modeler_listener2_3.png %}
 
-之后，增加一个事件为 <b>start</b>，类为 `org.activiti.myExplorer.listener.ActPersonListener` 的监听器。
-（由于 myActiviti 采用微服务 api 的工作方式，这里选择监听 start 事件才能得到我们想要的效果。而 `org.activiti.myExplorer.listener.ActPersonListener` 是 myActiviti 内置的和环节参与者相关的监听器类，它得到的数据会在返回结果中以 `actPerson` 属性显示）
+之后，增加一个事件为 <b>start</b>，类为 `workflow.util.listener.CommonListener` 的监听器。
+（由于 myActiviti 采用微服务 api 的工作方式，这里选择监听 start 事件才能得到我们想要的效果。而 `workflow.util.listener.CommonListener` 是 myActiviti 内置的和环节参与者相关的监听器类，它得到的数据会在返回结果中以 `actPerson` 属性显示）
 
-{% asset_img modeler_listener3.png %}
+{% asset_img modeler_listener6_1.png %}
 
-之后，因为 `org.activiti.myExplorer.listener.ActPersonListener` 监听器的要求，我们还需要为此监听器设置一个名为 “path” 的变量，为此点选左下方的“+”号，输入名称 “path” 和字符串值 “microservice/serviceauth/p_getusersbyroleid”（一个微服务地址），如下图：
+因为 `workflow.util.listener.CommonListener` 监听器的要求，我们需要设置一个名为 “type” 的变量，它可以是 <b>系统保留值 “form_data”</b> 之外的 <b>任何值</b>，这里我们将它设为 “act_person”:
 
-{% asset_img modeler_listener4.png %}
+{% asset_img modeler_listener7_1.png %}
 
-最后点选 `保存`，这个监听器就生效了。以后再用 api 流转这个环节时，在 `formData` 中加入 `act_person` 内容和参数，例如：
+之后，同样因为 `workflow.util.listener.CommonListener` 监听器的要求，我们还需要为此监听器设置一个名为 “path” 的变量，为此点选左下方的“+”号，输入名称 “path” 和字符串值 “microservice/serviceauth/p_getusersbyroleid”（一个微服务地址），如下图：
+
+{% asset_img modeler_listener8_1.png %}
+
+最后点选 `保存`，这个监听器就生效了。以后再用 api 流转这个环节时，在 `formData` 中加入 “act_person” 内容和参数，例如：
 
 ```java
 formData={form_data:{endApply:false, nextOU:"M"}, act_person:{arg_roleid:"046ab6429ce611e7ad99008cfa042288"}}
@@ -135,9 +139,9 @@ formData={form_data:{endApply:false, nextOU:"M"}, act_person:{arg_roleid:"046ab6
 ```java
 microservice/serviceauth/p_getusersbyroleid?arg_roleid=046ab6429ce611e7ad99008cfa042288
 ```
-（前面的 ip 部分可以不写，myActiviti 会根据当前环境自动处理）
+（前面的 ip 部分可以不写，myActiviti 会根据当前环境自动处理；同时您在这里可以看出为什么 “form_data” 是系统保留值）
 
-调用后得到的数据会在返回结果中以 `actPerson` 属性显示，如下：
+调用后得到的数据会在返回结果中以 “listenerReturn.act_person” 属性显示，如下：
 
 ```
 {
@@ -145,14 +149,16 @@ microservice/serviceauth/p_getusersbyroleid?arg_roleid=046ab6429ce611e7ad99008cf
         {
             "actId": "tmoCheak",
             "actName": "总院TMO审核",
-            "actPerson": {
-            			"RetVal": "1",
-            			"RetCode": "1",
-            			"RowCount": "6",
-            			"DataRows": [{
-            			    ......
-            			}]
-            		},
+            "listenerReturn": {
+                "act_person": {
+                    "RetVal": "1",
+                    "RetCode": "1",
+                    "RowCount": "6",
+                    "DataRows": [{
+                        ......
+                    }]
+                }
+            },
             "actRole": [
                 "tmo"
             ],
@@ -168,6 +174,8 @@ microservice/serviceauth/p_getusersbyroleid?arg_roleid=046ab6429ce611e7ad99008cf
 }
 ```
 
+其中，“listenerReturn” 是封装所有监听器返回值的固定属性，只在监听器有返回值时才会出现。而 “act_person” 属性名是由该监听器的 “type” 值决定的，因此您可以通过在一个环节中添加多个 `workflow.util.listener.CommonListener` 监听器的方式来调用多个微服务，只要它们的 “path” 指向不同微服务路径，并且 “type” 值不同即可。
+
 最后，只有包含 `formData` 的操作（如 `start` 和 `flow`）才能为监听器路径赋予新变量，而不包含 `formData` 的操作（如 `justStart`）只能使用监听器中固定的路径，这是为了监听器可以自由的回退（撤回或驳回）而做的设计。
 
 ## [最佳实践](#最佳实践)
@@ -176,3 +184,5 @@ microservice/serviceauth/p_getusersbyroleid?arg_roleid=046ab6429ce611e7ad99008cf
 - 先复制，后变更。当流程图贴近现实场景后，会变得非常复杂，每个流程图的工作量可以达到人天级别，此时编辑流程时防止“手滑”变得至关重要（比如以为元素粘上了实际没有粘上）,尤其是对一些生产环境的流程进行变更时更是如此，所以一定要培养勤备份的习惯。
 
 - 测试环境设计，生产环境导入。一般工作流至少有生产环境和测试环境两套。无论是新增流程还是修改流程，都应该先在测试环境设计、变更、测试，无问题后导出工作流文件，再在生产环境导入工作流文件。切记不要在生产环境进行设计。
+
+- 合理使用监听器可以节省您大量的代码。
