@@ -66,18 +66,16 @@ list_number: false
 
 以上就是 `justStart` 操作的全部内容，业务系统调用并获得返回数据后可以按自己的需要使用这些信息。
 
-### [流转（flow）](#流转（flow）)
-多数情况下，业务系统会接着调用 `flow`（流转）操作，仍以上一章的立项流程为例，起草环节的流转 api 格式如下：
+### [移动（move）](#移动（move）)
+`move` 是我们推荐使用的流转方式，这种方式采用 `taskId` 作为流转关键参数，如前面所提 `taskId` 的特点是每次流转后都会改变，使用它作为关键参数可以实现明确指定当前环节（正在流转的环节）和避免多次抖动提交造成过度流转（流转到预期之外的环节）的需求。起草环节的流转 api 格式如下：
 
 ```java
-./wfservice/flow?exeId=40013
-                &dealRole=projectManager
-                &dealPerson=ZhangSan
+./wfservice/move?taskId=40016
+                &assignee=ZhangSan
                 &formData={form_data:{endApply:false, nextOU:"M"}}
 ```
 
-其中，`exeId`（执行变量 Id）、`dealRole`（参与者角色）和  `dealPerson`（参与者）是必填项，`formData`（参与流转的流程变量）是选填项，但是如果待流转的环节含有条件序列流，在发起流转请求时必须包含可以执行条件判断的所有变量。比如我们在上一章设计的流程图中起草环节有可能进行如下判断：
-
+其中，`taskId`（任务 Id）是必填项，`assignee`（环节参与者）和 `formData`（参与流转的流程变量）是选填项，同样如果待流转的环节含有条件序列流，在发起 /move 请求时必须包含可以执行条件判断的所有变量（封装于 `formData` 下的 `form_data` 中）。比如我们在上一章设计的流程图中起草环节有可能进行如下判断：
 
 | 序列流指向     | 序列流条件   |
 |:--------|:-------|
@@ -117,30 +115,16 @@ formData={form_data:{endApply:false, nextOU:"M"}}
 
 内容格式和上一小节 `justStart` 返回的内容格式相同，值得注意的是，这次返回的是流程图中起草的后一个环节。
 
-### [开始（start）](#开始（start）)
-之前我们介绍了用于开始流程的 `justStart` 和用于流转的 `flow`，但如果用户不想在第一个环节停留，我们还提供了 `start` 方法用于开始流程并通过第一个环节。这个方法可以看作是先 `justStart` 再 `flow`，它的 api 格式如下：
+### [开始并移动（startMove）](#开始并流转（startMove）)
+之前我们介绍了用于开始流程的 `justStart` 和用于流转的 `move`，但如果用户不想在第一个环节停留，我们还提供了 `startMove` 方法用于开始流程并通过第一个环节。这个方法可以看作是先 `justStart` 再 `move`，它的 api 格式如下：
 
 ```java
-./wfservice/start?businessId=business2
-                &dealRole=projectManager
-                &dealPerson=ZhangSan
-                &formData={form_data:{endApply:false, nextOU:"M"}}
-```
-
-其中，`businessId`（要启动的业务 Id）、`dealRole`（参与者角色）和  `dealPerson`（参与者）是必填项，`formData`（参与流转的流程变量）是选填项，但是如果待流转的环节含有条件序列流，在发起流转请求时必须包含可以执行条件判断的所有变量。它的返回和 `flow` 操作的返回是相同的。
-
-### [移动（move）](#移动（move）)
-`move` 是我们推荐使用的流转方式，这种方式采用 `taskId` 作为流转关键参数，如前面所提 `taskId` 的特点是每次流转后都会改变，使用它作为关键参数可以实现明确指定当前环节（正在流转的环节）和避免多次抖动提交造成过度流转（流转到预期之外的环节）的需求。起草环节的流转 api 格式如下：
-
-```java
-./wfservice/move?taskId=40016
+./wfservice/startMove?businessId=business2
                 &assignee=ZhangSan
                 &formData={form_data:{endApply:false, nextOU:"M"}}
 ```
 
-其中，`taskId`（任务 Id）是必填项，`assignee`（环节参与者）和 `formData`（参与流转的流程变量）是选填项，同样如果待流转的环节含有条件序列流，在发起 /move 请求时必须包含可以执行条件判断的所有变量（封装于 `formData` 下的 `form_data` 中）。
-
-### [开始并移动（startMove）](#开始并流转（startMove）)
+其中，`businessId`（要启动的业务 Id）是必填项，`assignee`（环节参与者）和 `formData`（参与流转的流程变量）是选填项，但是如果待流转的环节含有条件序列流，在发起流转请求时必须包含可以执行条件判断的所有变量。它的返回和 `move` 操作的返回是相同的。
 
 ## [挂起、恢复与终止](#挂起、恢复与终止)
 
@@ -285,7 +269,75 @@ myActiviti 实现软结束的方式很简单，只需要将某个环节的输入
     "isEnd": "1"
 }
 ```
+## [历史遗留](#历史遗留)
+以下 API 曾被开发，但经时间证明它们并非最佳实践因而不再推荐使用。这些 API 一直可用，但不会再增加特性，在此列出并建议使用了它们的用户尽快替换。
+
+### [流转（flow）](#流转（flow）)
+`flow` 是曾经的用于流转的 API ，使用 `exeId` 做为流转关键参数，它的格式如下：
+
+```java
+./wfservice/flow?exeId=40013
+                &dealRole=projectManager
+                &dealPerson=ZhangSan
+                &formData={form_data:{endApply:false, nextOU:"M"}}
+```
+
+其中，`exeId`（执行变量 Id）、`dealRole`（参与者角色）和  `dealPerson`（参与者）是必填项，`formData`（参与流转的流程变量）是选填项，但是如果待流转的环节含有条件序列流，在发起流转请求时必须包含可以执行条件判断的所有变量。比如我们在上一章设计的流程图中起草环节有可能进行如下判断：
+
+
+| 序列流指向     | 序列流条件   |
+|:--------|:-------|
+| `总院TMO审核`  | ${endApply == false && nextOU == "M"} |
+| `A分院TMO审核` | ${endApply == false && nextOU == "A"} |
+| `B分院TMO审核` | ${endApply == false && nextOU == "B"} |
+| `结束环节`     | ${endApply == true} |
+
+因此在发起这个环节的流转请求时我们或者给出 `endApply` 为 false 和 `nextOU` 的值；或者给出 `endApply` 为 true（此时可以不提供 `nextOU` 的值）。具体赋值的格式如下：
+
+```java
+formData={form_data:{endApply:false, nextOU:"M"}}
+```
+
+这个方法的返回结果形如：
+
+```json
+{
+    "DataRows": [
+        {
+            "actId": "tmoCheak",
+            "actName": "总院TMO审核",
+            "actRole": [
+                "tmo"
+            ],
+            "exeId": "40013",
+            "isEnd": "0",
+            "procInstId": "40013",
+            "taskId": "40028"
+        }
+    ],
+    "RetCode": "1",
+    "RetVal": "1",
+    "isEnd": "0"
+}
+```
+
+内容格式和上一小节 `justStart` 返回的内容格式相同，值得注意的是，这次返回的是流程图中起草的后一个环节。
+
+### [开始（start）](#开始（start）)
+`start` 方法是曾经的用于开始流程并通过第一个环节的 API，可以看作是先 `justStart` 再 `flow`，它的 api 格式如下：
+
+```java
+./wfservice/start?businessId=business2
+                &dealRole=projectManager
+                &dealPerson=ZhangSan
+                &formData={form_data:{endApply:false, nextOU:"M"}}
+```
+
+其中，`businessId`（要启动的业务 Id）、`dealRole`（参与者角色）和  `dealPerson`（参与者）是必填项，`formData`（参与流转的流程变量）是选填项，但是如果待流转的环节含有条件序列流，在发起流转请求时必须包含可以执行条件判断的所有变量。它的返回和 `flow` 操作的返回是相同的。
+
 ## [总结](#总结)
 - 本章中介绍的所有 api 都支持 get 和 post 两种调用方式。
 
-- 本章介绍的方法参数格式都已经确定，下一章将介绍调用方式没有完全确定的进阶操作（并行网关、自由流等）
+- 目前 `flow` 和 `start` 已不推荐使用，建议用户替换为 `move` 和 `startMove`。
+
+- 本章介绍的方法参数格式都已经确定，下一章将介绍进阶操作（并行网关、监听器等）
