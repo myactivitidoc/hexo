@@ -85,29 +85,12 @@ list_number: false
 
 即两条分支收成了一条，以上两条分支无论谁先谁后都是如此。
 
-### [自由流](#自由流)
-自由流是 BPMN 2.0 新增流转方式之一，它的含义是选择一组特定的环节，组内环节每个都可以无障碍的流转到另一个。在 myActiviti 中，自由流如下图所示：
-
-{% asset_img free.png %}
-
-在自由流内部流转时，采用 `jump` 而非 `flow` 的方式，如：
-
-```java
-./wfservice/jump?exeId=40013
-                &dealRole=projectManager
-                &dealPerson=ZhangSan
-                &formData={form_data:{endApply:false, nextOU:"M"}}
-```
-（自由流功能尚在开发中，参数格式并没有完全确定）
-
-自由流跳转的返回的内容与正常流转返回内容相同。
-
 ### [监听器](#监听器)
 监听器是 myActiviti 的一种高级特性，它可以极大简化调用工作流 api 解决实际问题的代码，同时极大的提高您软件的生产力。
 
 当您使用工作流解决实际问题时，您进行每一次流转需要的并不仅仅是流程数据，还会用到人员数据、组织机构数据、角色数据、特定业务数据……等等。这些数据有一个统一特点，就是它们和流程环节有密切的相关性，如果您仅仅调用工作流 api，就可以在得到流程数据的同时获得当前环节相关的人员数据、组织机构数据等，将大大提高开发效率，这就是监听器的由来。
 
-在 myActiviti 中使用监听器的方法很简单，在流程图中相关环节上点击“执行监听器”即可：
+在 myActiviti 中使用监听器的方法很简单，在流程图中相关环节上点击“执行监听器”或“任务监听器”即可（两者可选择的生命周期不同），这里以“执行监听器”为例：
 
 {% asset_img modeler_listener_2.png %}
 
@@ -116,7 +99,7 @@ list_number: false
 {% asset_img modeler_listener2_3.png %}
 
 之后，增加一个事件为 <b>start</b>，类为 `workflow.util.listener.CommonListener` 的监听器。
-（由于 myActiviti 采用微服务 api 的工作方式，这里选择监听 start 事件才能得到我们想要的效果。而 `workflow.util.listener.CommonListener` 是 myActiviti 内置的和环节参与者相关的监听器类，它得到的数据会在返回结果中以 `actPerson` 属性显示）
+（这里我们选择监听 start 事件， `workflow.util.listener.CommonListener` 是 myActiviti 内置的专门处理 start 事件的类，它得到的数据会在返回结果中以 `startListenerReturn` 属性显示）
 
 {% asset_img modeler_listener6_1.png %}
 
@@ -149,7 +132,7 @@ microservice/serviceauth/p_getusersbyroleid?arg_roleid=046ab6429ce611e7ad99008cf
         {
             "actId": "tmoCheak",
             "actName": "总院TMO审核",
-            "listenerReturn": {
+            "startListenerReturn": {
                 "act_person": {
                     "RetVal": "1",
                     "RetCode": "1",
@@ -174,9 +157,42 @@ microservice/serviceauth/p_getusersbyroleid?arg_roleid=046ab6429ce611e7ad99008cf
 }
 ```
 
-其中，“listenerReturn” 是封装所有监听器返回值的固定属性，只在监听器有返回值时才会出现。而 “act_person” 属性名是由该监听器的 “type” 值决定的，因此您可以通过在一个环节中添加多个 `workflow.util.listener.CommonListener` 监听器的方式来调用多个微服务，只要它们的 “path” 指向不同微服务路径，并且 “type” 值不同即可。
+其中，“startListenerReturn” 是封装所有监听器返回值的固定属性，只在监听器有返回值时才会出现。而 “act_person” 属性名是由该监听器的 “type” 值决定的，因此您可以通过在一个环节中添加多个 `workflow.util.listener.CommonListener` 监听器的方式来调用多个微服务，只要它们的 “type” 值不同即可。
 
-最后，只有包含 `formData` 的操作（如 `start` 和 `flow`）才能为监听器路径赋予新变量，而不包含 `formData` 的操作（如 `justStart`）只能使用监听器中固定的路径，这是为了监听器可以自由的回退（撤回或驳回）而做的设计。
+“执行监听器” 中除 start 事件之外还有其它的事件可监控，并且 “执行监听器” 之外还有 “任务监听器”，它们的对应关系如下：
+
+| 监听器     | 事件   | 回传封装属性   | 类   |
+|:--------|:-------|:-------|:-------|
+| 执行监听器  | `start` | startListenerReturn | workflow.util.listener.CommonListener |
+| 执行监听器  | `take` | 无 | 当前无法触发 |
+| 执行监听器  | `end` | endListenerReturn | workflow.util.listener.EndCommonListener |
+| 任务监听器  | `create` | createListenerReturn | workflow.util.listener.CreateListener |
+| 任务监听器  | `assignment` | assignmentListenerReturn | workflow.util.listener.AssignmentListener |
+| 任务监听器  | `complete` | completeListenerReturn | workflow.util.listener.CompleteListener |
+| 任务监听器  | `delete` | deleteListenerReturn | workflow.util.listener.DeleteListener |
+
+在执行监听器指向的 API 时，有时我们需要传入工作流本身的变量（如 taskId、actName 等），可这些变量在流转前用户无法获得，因此我们增加了一些内置参数来表示这些变量，如：
+
+```java
+formData={form_data:{endApply:false, nextOU:"M"}, act_person:{arg_task_id:"${taskId}", arg_act_name:"${actName}"}}
+```
+
+这样在调用 API 时 arg_task_id 的值为当前 `taskId`，arg_act_name 的值为当前的 `actName`。
+
+全部内置参数如下：
+
+| 参数名     | 实际值   |
+|:--------|:-------|:-------|:-------|
+| ${actId}  | 当前的环节id |
+| ${actName}  | 当前的环节名称 |
+| ${exeId}  | 当前的执行变量id |
+| ${procDefId}  | 当前的流程定义id |
+| ${procInstId}  | 当前的流程实例id |
+| ${taskId}  | 当前的任务id |
+| ${taskName}  | 当前的任务名称 |
+| $${foo}  | 环节参与变量foo的值 |
+
+最后一个内置参数比较特殊，它的名称中 foo 可以是任何值，这样就可以把您需要的任何由 “form_data” 引入的变量带到 API 中。
 
 ## [最佳实践](#最佳实践)
 - 单入口，单出口。虽然工作流支持多个结束环节，但不推荐这样画，建议每个图都有唯一的结束环节。

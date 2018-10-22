@@ -115,6 +115,14 @@ formData={form_data:{endApply:false, nextOU:"M"}}
 
 内容格式和上一小节 `justStart` 返回的内容格式相同，值得注意的是，这次返回的是流程图中起草的后一个环节。
 
+"form_data" 中传入的变量称为环节参与变量，这些变量都是局部变量即仅在当前环节有效，当前环节结束后就无法访问。如果您需要一个长期有效的变量，可以在环节参与变量名前加“$”,如：
+
+```java
+formData={form_data:{$endApply:false, $nextOU:"M"}}
+```
+
+这样环节参与变量“endApply”和“nextOU”就会在流程实例生命周期中一直有效，它的意义在“监听器”一章可以看到。
+
 ### [开始并移动（startMove）](#开始并流转（startMove）)
 之前我们介绍了用于开始流程的 `justStart` 和用于流转的 `move`，但如果用户不想在第一个环节停留，我们还提供了 `startMove` 方法用于开始流程并通过第一个环节。这个方法可以看作是先 `justStart` 再 `move`，它的 api 格式如下：
 
