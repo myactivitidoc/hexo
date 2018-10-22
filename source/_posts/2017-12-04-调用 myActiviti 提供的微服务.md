@@ -129,6 +129,19 @@ formData={form_data:{endApply:false, nextOU:"M"}}
 
 其中，`businessId`（要启动的业务 Id）、`dealRole`（参与者角色）和  `dealPerson`（参与者）是必填项，`formData`（参与流转的流程变量）是选填项，但是如果待流转的环节含有条件序列流，在发起流转请求时必须包含可以执行条件判断的所有变量。它的返回和 `flow` 操作的返回是相同的。
 
+### [移动（move）](#移动（move）)
+`move` 是我们推荐使用的流转方式，这种方式采用 `taskId` 作为流转关键参数，如前面所提 `taskId` 的特点是每次流转后都会改变，使用它作为关键参数可以实现明确指定当前环节（正在流转的环节）和避免多次抖动提交造成过度流转（流转到预期之外的环节）的需求。起草环节的流转 api 格式如下：
+
+```java
+./wfservice/move?taskId=40016
+                &assignee=ZhangSan
+                &formData={form_data:{endApply:false, nextOU:"M"}}
+```
+
+其中，`taskId`（任务 Id）是必填项，`assignee`（环节参与者）和 `formData`（参与流转的流程变量）是选填项，同样如果待流转的环节含有条件序列流，在发起 /move 请求时必须包含可以执行条件判断的所有变量（封装于 `formData` 下的 `form_data` 中）。
+
+### [开始并移动（startMove）](#开始并流转（startMove）)
+
 ## [挂起、恢复与终止](#挂起、恢复与终止)
 
 ### [挂起（suspend）](#挂起（suspend）)
