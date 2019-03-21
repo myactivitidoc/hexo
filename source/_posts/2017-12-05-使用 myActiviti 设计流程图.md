@@ -19,16 +19,11 @@ list_number: false
 这张流程图包含的元素有 `开始事件-普通开始事件`、`任务-用户任务`、`结束事件-普通结束事件`、`网关-互斥网关`、`序列流`，我们还将一条序列流的 `元素名称` 命名为“结束申请”。关于这张图的详细画法我们下面会详细介绍。
 
 ## [用户任务和环节参与者](#用户任务和环节参与者)
-`用户任务` 是企业级应用中最常用到的一种任务，我们向工作区添加一个用户任务后，在这个任务的输入区至少要指定 3 个属性，如下：
+`用户任务` 是企业级应用中最常用到的一种任务，我们向工作区添加一个用户任务后，在这个任务的输入区至少要指定 2 个属性，如下：
 
 {% asset_img draftTaskInput.png %}
 
-我们要指定 `ID`，以方便业务系统调用这个流程时知道当前流程是哪一个；我们要指定 `元素名称`，以方便在工作区查看这个任务；我们还要指定 `任务分配`，如下：
-
-{% asset_img assign.png %}
-
-在这里我们必须至少指定一个 `候选组`，这是 myActiviti 的约定，因为当您使用微服务调用此流程时，调用参数中的“参与者角色”（dealRole）必须存在于流程图中目标任务的 `候选组` 中才有权限完成任务，所以如果这里为空就没有参与者能通过微服务方式流转这一环节了。
-（您应该已经想到，无论是ID “drafter” 还是候选组 “projectManager”，都是先由业务系统定义，然后再写到流程图里的）
+我们要指定 `ID`，以方便业务系统调用这个流程时知道当前流程是哪一个；我们要指定 `元素名称`，以方便在工作区查看这个任务；
 
 如果您在 `文档` 中加入内容，则在返回的 json 中的 "document" 属性也会显示这些内容。
 
@@ -51,7 +46,7 @@ list_number: false
 
 {% asset_img deploy_2.png %}
 
-这里的 “business2” 是我们为这个流程指定的业务 ID，然后准备工作就全部结束了。相信您早就想运行这个流程了吧，现在在您的浏览器输入 [http://10.0.209.147/microservice/workflow/wfservice/justStart?businessId=business2](http://10.0.209.147/microservice/workflow/wfservice/justStart?businessId=business2) 看看：
+这里的 “business2” 是我们为这个流程指定的业务 ID，然后准备工作就全部结束了。相信您早就想运行这个流程了吧，现在在您的浏览器输入 [http://10.0.209.147/microservice/workflownew/wfservice/begin?businessId=business2](http://10.0.209.147/microservice/workflownew/wfservice/begin?businessId=business2) 看看：
 
 ```json
 {
@@ -77,4 +72,4 @@ list_number: false
 
 如果您浏览器上显示的和上面类似（仅仅是 exeId、procInstId 和 taskId 不同），那恭喜您，您的流程图成功的以微服务的方式调用了。
 
-本篇文章中我们只讲述 `justStart` API 的使用，这是一种启动流程的方法，至于流转、挂起、撤回等更复杂操作，我们在下一章进行介绍。
+本篇文章中我们只讲述 `begin` API 的使用，这是一种启动流程的方法，至于流转、挂起、撤回等更复杂操作，我们在下一章进行介绍。
