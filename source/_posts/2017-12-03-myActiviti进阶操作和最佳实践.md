@@ -95,25 +95,25 @@ list_number: false
 
 之后进入“执行监听器”设置界面，点击如下图所示的“+”号建立监听器：
 
-{% asset_img modeler_listener2_3.png %}
+{% asset_img modeler_listener2_8.png %}
 
-之后，增加一个事件为 <b>start</b>，类为 `workflow.util.listener.CommonListener` 的监听器。
-（这里我们选择监听 start 事件， `workflow.util.listener.CommonListener` 是 myActiviti 内置的专门处理 start 事件的类，它得到的数据会在返回结果中以 `startListenerReturn` 属性显示）
+之后，增加一个事件为 <b>start</b>，委托表达式为 `commonStartListener` 的监听器。
+（这里我们选择监听 start 事件，它得到的数据会在返回结果中以 `startListener` 属性显示）
 
-{% asset_img modeler_listener6_1.png %}
+{% asset_img modeler_listener6_3.png %}
 
-因为 `workflow.util.listener.CommonListener` 监听器的要求，我们需要设置一个名为 “type” 的变量，它可以是 <b>系统保留值 “form_data”</b> 之外的 <b>任何值</b>，这里我们将它设为 “act_person”:
+因为 `commonStartListener` 监听器的要求，我们需要设置一个名为 “type” 的变量，它可以是 <b>系统保留值 “form_data”</b> 之外的 <b>任何值</b>，这里我们将它设为 “act_person”:
 
-{% asset_img modeler_listener7_1.png %}
+{% asset_img modeler_listener7_2.png %}
 
-之后，同样因为 `workflow.util.listener.CommonListener` 监听器的要求，我们还需要为此监听器设置一个名为 “path” 的变量，为此点选左下方的“+”号，输入名称 “path” 和字符串值 “microservice/serviceauth/p_getusersbyroleid”（一个微服务地址），如下图：
+之后，同样因为 `commonStartListener` 监听器的要求，我们还需要为此监听器设置一个名为 “path” 的变量，为此点选左下方的“+”号，输入名称 “path” 和字符串值 “microservice/serviceauth/p_getusersbyroleid”（一个微服务地址），如下图：
 
-{% asset_img modeler_listener8_1.png %}
+{% asset_img modeler_listener8_2.png %}
 
-最后点选 `保存`，这个监听器就生效了。以后再用 api 流转这个环节时，在 `formData` 中加入 “act_person” 内容和参数，例如：
+最后点选 `保存`，这个监听器就生效了。以后再用 api 流转这个环节时，在 `listener` 中加入 “act_person” 内容和参数，例如：
 
 ```java
-formData={form_data:{endApply:false, nextOU:"M"}, act_person:{arg_roleid:"046ab6429ce611e7ad99008cfa042288"}}
+listener={act_person:{arg_roleid:"046ab6429ce611e7ad99008cfa042288"}}
 ```
 
 如上所示，相关监听器就会自动调用微服务：
@@ -121,9 +121,9 @@ formData={form_data:{endApply:false, nextOU:"M"}, act_person:{arg_roleid:"046ab6
 ```java
 microservice/serviceauth/p_getusersbyroleid?arg_roleid=046ab6429ce611e7ad99008cfa042288
 ```
-（前面的 ip 部分可以不写，myActiviti 会根据当前环境自动处理；同时您在这里可以看出为什么 “form_data” 是系统保留值）
+（前面的 ip 部分可以不写，myActiviti 会根据当前环境自动处理）
 
-调用后得到的数据会在返回结果中以 “listenerReturn.act_person” 属性显示，如下：
+调用后得到的数据会在返回结果中以 “startListener.act_person” 属性显示，如下：
 
 ```
 {
@@ -131,7 +131,7 @@ microservice/serviceauth/p_getusersbyroleid?arg_roleid=046ab6429ce611e7ad99008cf
         {
             "actId": "tmoCheak",
             "actName": "总院TMO审核",
-            "startListenerReturn": {
+            "startListener": {
                 "act_person": {
                     "RetVal": "1",
                     "RetCode": "1",
@@ -156,24 +156,23 @@ microservice/serviceauth/p_getusersbyroleid?arg_roleid=046ab6429ce611e7ad99008cf
 }
 ```
 
-其中，“startListenerReturn” 是封装所有监听器返回值的固定属性，只在监听器有返回值时才会出现。而 “act_person” 属性名是由该监听器的 “type” 值决定的，因此您可以通过在一个环节中添加多个 `workflow.util.listener.CommonListener` 监听器的方式来调用多个微服务，只要它们的 “type” 值不同即可。
+其中，“startListener” 是封装所有 start 事件监听器返回值的固定属性，只在该事件监听器有返回值时才会出现。而 “act_person” 属性名是由监听器的 “type” 值决定的，因此您可以通过在一个环节中添加多个 `commonStartListener` 监听器的方式来调用多个微服务（按定义的顺序执行），只要它们的 “type” 值不同即可。
 
 “执行监听器” 中除 start 事件之外还有其它的事件可监控，并且 “执行监听器” 之外还有 “任务监听器”，它们的对应关系如下：
 
-| 监听器     | 事件   | 回传封装属性   | 类   |
+| 监听器     | 事件   | 回传封装属性   | 委托表达式   |
 |:--------|:-------|:-------|:-------|
-| 执行监听器  | `start` | startListenerReturn | workflow.util.listener.CommonListener |
+| 执行监听器  | `start` | startListener | commonStartListener |
 | 执行监听器  | `take` | 无 | 当前无法触发 |
-| 执行监听器  | `end` | endListenerReturn | workflow.util.listener.EndCommonListener |
-| 任务监听器  | `create` | createListenerReturn | workflow.util.listener.CreateListener |
-| 任务监听器  | `assignment` | assignmentListenerReturn | workflow.util.listener.AssignmentListener |
-| 任务监听器  | `complete` | completeListenerReturn | workflow.util.listener.CompleteListener |
-| 任务监听器  | `delete` | deleteListenerReturn | workflow.util.listener.DeleteListener |
+| 执行监听器  | `end` | endListener | commonEndListener |
+| 任务监听器  | `create` | createListener | commonCreateListener |
+| 任务监听器  | `assignment` | assignmentListener | commonAssignmentListener |
+| 任务监听器  | `complete` | completeListener | commonCompleteListener |
 
 在执行监听器指向的 API 时，有时我们需要传入工作流本身的变量（如 taskId、actName 等），可这些变量在流转前用户无法获得，因此我们增加了一些内置参数来表示这些变量，如：
 
 ```java
-formData={form_data:{endApply:false, nextOU:"M"}, act_person:{arg_task_id:"${taskId}", arg_act_name:"${actName}"}}
+listener={act_person:{arg_roleid:"046ab6429ce611e7ad99008cfa042288", arg_task_id:"${taskId}", arg_act_name:"${actName}"}}
 ```
 
 这样在调用 API 时 arg_task_id 的值为当前 `taskId`，arg_act_name 的值为当前的 `actName`。
@@ -191,7 +190,7 @@ formData={form_data:{endApply:false, nextOU:"M"}, act_person:{arg_task_id:"${tas
 | ${taskName}  | 当前的任务名称 |
 | $${foo}  | 环节参与变量foo的值 |
 
-最后一个内置参数比较特殊，它的名称中 foo 可以是任何值，这样就可以把您需要的任何由 “form_data” 引入的变量带到 API 中。
+最后一个内置参数比较特殊，它的名称中 foo 可以是任何值，这样就可以把您需要的任何由 “form” 引入的变量带到 API 中。
 
 ## [最佳实践](#最佳实践)
 - 单入口，单出口。虽然工作流支持多个结束环节，但不推荐这样画，建议每个图都有唯一的结束环节。
