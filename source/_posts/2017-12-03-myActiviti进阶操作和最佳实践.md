@@ -9,10 +9,10 @@ list_number: false
 
 ## [进阶操作](#进阶操作)
 
-### [并行调用](#并行调用)
+### [并行网关](#并行网关)
 有时候我们需要多个流程分支并行流转，myActiviti 可以通过并行网关实现这样的效果。并行网关的形状是一个菱形中间加一个 “+”，效果是它发散的多条序列流中每一条都可以独立流转；一般一个并行网关发散之后还会有另一个并行网关作为收集，例如下图：
 
-{% asset_img parallel.png %}
+{% asset_img showParallel.png %}
 
 在这个流程图中，当“请各分院处理”环节流转过后，返回值会如下所示：
 
@@ -48,16 +48,42 @@ list_number: false
 }
 ```
 
-值得注意的是，`DataRows` 中出现两个流程分支，这两个分支都可以进行流转，同时 `exeId` 不再与 `procInstId` 相同；并且当流转到收集点时，先到的流程分支会返回：
+值得注意的是，`DataRows` 中出现两个流程分支，这两个分支都可以进行流转，同时 `exeId` 不再与 `procInstId` 相同；并且当流转到收集点时，先到的流程分支会返回（假设A分院处理完毕）：
 
 ```json
 {
-    "DataRows": [],
+    "DataRows": [
+        {
+            "actId": "parallelClose",
+            "actName": "并行网关结束",
+            "actRole": null,
+            "document": null,
+            "exeId": "40141",
+            "isEnd": "0",
+            "procInstId": "40130",
+            "taskId": null,
+            "type": "PARALLEL_GATEWAY"
+        }
+    ],
     "RetCode": "1",
     "RetVal": "1",
+    "extras": [
+        {
+            "actId": "parallelClose",
+            "actName": "并行网关结束",
+            "actRole": null,
+            "document": null,
+            "exeId": "40141",
+            "isEnd": "0",
+            "procInstId": "40130",
+            "taskId": null,
+            "type": "PARALLEL_GATEWAY"
+        }
+    ],
     "isEnd": "0"
 }
 ```
+其中 `parallelClose` 是第二个并行网关的 actId，对于这个结果可以通过 `DataRows[0].taskId` 为 null 来确认并发网关并没有结束。
 
 后到的分支会返回：
 
@@ -84,6 +110,12 @@ list_number: false
 
 即两条分支收成了一条，以上两条分支无论谁先谁后都是如此。
 
+### [包容网关](#包容网关)
+包容网关是融合了并行网关和互斥网关特性的网关，它可以生成并行分支（并行网关特性），也可以在分支序列流中写判断条件（互斥网关特性），例如我们把上面流程图中的并行网关变为包容网关，如下：
+
+{% asset_img showInclusive.png %}
+
+如果我们在指向 `A分院处理` 的序列流上加条件 `${useA == true}`，在指向 `B分院处理` 的序列流上加条件 `${useB == true}`，则在流转 `请各分院处理` 环节时，如果环节变量 `useA` 为 true 则流转 `A分院处理`，`useB` 为 true 则流转 `B分院处理`，两者都为 true 则都流转。
 ### [监听器](#监听器)
 监听器是 myActiviti 的一种高级特性，它可以极大简化调用工作流 api 解决实际问题的代码，同时极大的提高您软件的生产力。
 
