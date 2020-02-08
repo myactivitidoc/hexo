@@ -15,7 +15,7 @@ Activiti 是目前使用人数最多的开源工作流，它定义的 BPMN 标�
 myActiviti 是基于 Activiti-6 的深度改造，它一方面继承了 Activiti 易于上手的优点，另一方面加入了中国流特性和微服务特性。因此学习并使用 myActiviti 可以以极低的成本满足您的业务需求，并且，假如您想切换为其它符合 BPMN 标准的工作流引擎，您也不需要做太多额外的工作，因为您最重要的资产 “流程图” 是可以完全复用的。
 
 ## [如何访问 myActiviti](#如何访问-myActiviti)
-myActiviti 的访问地址为内网 [http://10.0.209.147/myactiviti/explorer/#/user/login](http://10.0.209.147/myactiviti/explorer/#/user/login)，点击后会出现如下登录页面：
+myActiviti 的登录页面为：
 {% asset_img login_4.png %}
 
 这是 myActiviti 的测试环境，目前提供以下测试帐号，这些账号均拥有高级用户权限，可以使用本文档提到的所有功能。

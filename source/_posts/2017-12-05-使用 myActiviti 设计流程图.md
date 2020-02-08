@@ -46,7 +46,7 @@ list_number: false
 
 {% asset_img deploy_2.png %}
 
-这里的 “business2” 是我们为这个流程指定的业务 ID，然后准备工作就全部结束了。相信您早就想运行这个流程了吧，现在在您的浏览器输入 [http://10.0.209.147/microservice/workflownew/wfservice/begin?businessId=business2](http://10.0.209.147/microservice/workflownew/wfservice/begin?businessId=business2) 看看：
+这里的 “business2” 是我们为这个流程指定的业务 ID，然后准备工作就全部结束了。相信您早就想运行这个流程了吧，现在在您的浏览器输入 ${工作流地址}/microservice/workflownew/wfservice/begin?businessId=business2 看看：
 
 ```json
 {
