@@ -220,6 +220,8 @@ listener={act_person:{arg_roleid:"046ab6429ce611e7ad99008cfa042288", arg_task_id
 | ${procInstId}  | 当前的流程实例id |
 | ${taskId}  | 当前的任务id |
 | ${taskName}  | 当前的任务名称 |
+| ${lastTaskId}  | 前一任务的id |
+| ${isWithdraw}  | 是否是撤回操作，默认为false，当执行withdraw操作时此值为true |
 | $${foo}  | 环节参与变量foo的值 |
 
 最后一个内置参数比较特殊，它的名称中 foo 可以是任何值，这样就可以把您需要的任何由 “form” 引入的变量带到 API 中。
@@ -340,6 +342,24 @@ listener={act_person:{arg_roleid:"046ab6429ce611e7ad99008cfa042288", arg_task_id
 这样一来，内容为 “张三您好，欢迎使用<b>工作流平台</b>！” 的邮件就会发送到 “zhang3@test.org” 邮箱中。
 
 环节参与变量中的 `email` 是必需的，它用来指定邮件接收方。可以在 `email` 中指定多个邮箱并用 “;” 或 “,” 分隔，这样就能一次给多个邮箱群发邮件。
+
+### [特殊调用参数](#特殊调用参数)
+
+在用户调用工作流（如 `begin`）时有些参数会起到特殊的做用，这些参数都以 "_" 开头，如下所示：
+
+| 参数名     | 实际值   |
+|:--------|:-------|:-------|:-------|
+| _softTransaction | 当值为 `true` 时对监听器结果进行事务回滚，为其它值时对监听器结果不进行事务回滚 |
+| _content | 当值为 `jsonEnumUseName` 时回传 json 中的 `isEnd` 值为 `NO` 或 `YES`，为其它值时回传 json 中的 `isEnd` 值为 `0` 或 `1`|
+
+例如，当用户启动一个流程，同时开启它 `softTransaction:true` 和 `_content:jsonEnumUseName` 性质时，只需要像下面这样调用：
+
+```
+./wfservice/begin?businessId=xxx
+                 &_softTransaction=true
+                 &_content=jsonEnumUseName
+                 &form=...
+```
 
 ## [最佳实践](#最佳实践)
 - 单入口，单出口。虽然工作流支持多个结束环节，但不推荐这样画，建议每个图都有唯一的结束环节。
